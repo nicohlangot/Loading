@@ -1,0 +1,152 @@
+--⚙️ Services
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local CoreGui = game:GetService("CoreGui")
+
+--🧼 Cleanup
+if CoreGui:FindFirstChild("ThanHubLoading") then
+	CoreGui:FindFirstChild("ThanHubLoading"):Destroy()
+end
+
+--🖼️ GUI Setup
+local gui = Instance.new("ScreenGui")
+gui.Name = "ThanHubLoading"
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.Parent = CoreGui
+
+--🔴 Background with black-red animation
+local bg = Instance.new("Frame")
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.BorderSizePixel = 0
+bg.Parent = gui
+
+-- Animate background color between black and red smoothly
+task.spawn(function()
+	local black = Color3.fromRGB(0, 0, 0)
+	local red = Color3.fromRGB(255, 0, 0)
+	while gui.Parent do
+		for i = 0, 1, 0.01 do
+			bg.BackgroundColor3 = black:Lerp(red, i)
+			task.wait(0.05)
+		end
+		for i = 0, 1, 0.01 do
+			bg.BackgroundColor3 = red:Lerp(black, i)
+			task.wait(0.05)
+		end
+	end
+end)
+
+--📝 Title
+local title = Instance.new("TextLabel")
+title.Text = "Pet Dupe By Nicoh"
+title.Font = Enum.Font.Arcade
+title.TextSize = 40
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1
+title.Size = UDim2.new(1, 0, 0, 60)
+title.Position = UDim2.new(0, 0, 0.35, 0)
+title.Parent = bg
+
+--📜 Subtitle
+local sub = Instance.new("TextLabel")
+sub.Text = "by Nicoh GAG"
+sub.Font = Enum.Font.Arcade
+sub.TextSize = 24
+sub.TextColor3 = Color3.fromRGB(200, 200, 200)
+sub.BackgroundTransparency = 1
+sub.Size = UDim2.new(1, 0, 0, 40)
+sub.Position = UDim2.new(0, 0, 0.43, 0)
+sub.Parent = bg
+
+--📦 Loading Frame
+local loadingFrame = Instance.new("Frame")
+loadingFrame.Size = UDim2.new(0.4, 0, 0, 22)
+loadingFrame.Position = UDim2.new(0.3, 0, 0.52, 0)
+loadingFrame.BackgroundColor3 = Color3.fromRGB(80, 0, 0)
+loadingFrame.BorderSizePixel = 0
+loadingFrame.ClipsDescendants = true
+loadingFrame.Parent = bg
+
+local uicorner1 = Instance.new("UICorner")
+uicorner1.CornerRadius = UDim.new(0, 12)
+uicorner1.Parent = loadingFrame
+
+--🟩 Loading Bar
+local loadBar = Instance.new("Frame")
+loadBar.Size = UDim2.new(0, 0, 1, 0)
+loadBar.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+loadBar.BorderSizePixel = 0
+loadBar.Parent = loadingFrame
+
+local uicorner2 = Instance.new("UICorner")
+uicorner2.CornerRadius = UDim.new(0, 12)
+uicorner2.Parent = loadBar
+
+--🔢 Percent Text
+local percentLabel = Instance.new("TextLabel")
+percentLabel.Size = UDim2.new(1, 0, 1, 0)
+percentLabel.Position = UDim2.new(0, 0, 0, 0)
+percentLabel.BackgroundTransparency = 1
+percentLabel.Text = "0%"
+percentLabel.Font = Enum.Font.Arcade
+percentLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+percentLabel.TextScaled = true
+percentLabel.Parent = loadingFrame
+percentLabel.ZIndex = 5
+
+--💬 Message Animation
+local messageLabel = Instance.new("TextLabel")
+messageLabel.Text = ""
+messageLabel.Font = Enum.Font.Arcade
+messageLabel.TextSize = 22
+messageLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+messageLabel.BackgroundTransparency = 1
+messageLabel.Size = UDim2.new(1, 0, 0, 30)
+messageLabel.Position = UDim2.new(0, 0, 0.6, 0)
+messageLabel.Parent = bg
+
+local messages = {
+    "Wait 5 minutes to wait.",
+    "Wait 5 minutes to wait..",
+    "Wait 5 minutes to wait...",
+    "Want free robux? Message me on TikTok 😉",
+    "Nicoh GAG - nq12oz on TikTok",
+    "To join to he's Private server...."
+}
+
+task.spawn(function()
+    while gui.Parent do
+        for _, msg in ipairs(messages) do
+            messageLabel.Text = msg
+            task.wait(1.5)
+        end
+    end
+end)
+
+--🎵 Music
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://1843525514" -- Replace with your own music ID if you want
+sound.Volume = 1
+sound.Looped = true
+sound.Parent = gui
+sound:Play()
+
+--⏳ Animate to 100% in 120 seconds (2 minutes)
+local TOTAL_TIME = 120 -- seconds
+local startTime = tick()
+
+local tween = TweenService:Create(loadBar, TweenInfo.new(TOTAL_TIME, Enum.EasingStyle.Linear), {
+	Size = UDim2.new(1, 0, 1, 0)
+})
+tween:Play()
+
+RunService.RenderStepped:Connect(function()
+	local elapsed = tick() - startTime
+	local percent = math.clamp(elapsed / TOTAL_TIME, 0, 1)
+	local display = math.floor(percent * 100)
+	if display >= 100 then
+		display = 100
+	end
+	percentLabel.Text = tostring(display) .. "%"
+end)
